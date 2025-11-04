@@ -6,7 +6,6 @@ import (
 	"math"
 	"net"
 	"slices"
-	"sync"
 )
 
 func main() {
@@ -18,14 +17,12 @@ func main() {
 
 	defer listener.Close()
 
-	wg := sync.WaitGroup{}
 	for {
 		conn, err := listener.AcceptTCP()
 		if err != nil {
-			continue
+			panic(err)
 		}
 		fmt.Println("Accepted connection !")
-		wg.Add(1)
 		go meansToAnEnd(conn)
 	}
 }
@@ -85,6 +82,8 @@ func meansToAnEnd(conn *net.TCPConn) {
 				sum += data[i].Price
 				count++
 			}
+		default:
+			return
 		}
 
 	}
