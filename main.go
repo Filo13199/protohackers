@@ -42,11 +42,10 @@ func meansToAnEnd(conn *net.TCPConn) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		fmt.Printf("recieved message !, [%s], \n", string(msg))
 		if len(msg) == 0 {
 			break
 		}
-
-		fmt.Printf("recieved message !, [%s], \n", string(msg))
 
 		op := string(msg[0])
 		switch op {
