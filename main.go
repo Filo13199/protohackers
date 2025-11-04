@@ -89,7 +89,11 @@ func meansToAnEnd(conn *net.TCPConn) {
 
 			// Write the int32 to the buffer using BigEndian byte order
 			// You can also use binary.LittleEndian or binary.NativeEndian
-			err := binary.Write(buf, binary.BigEndian, sum/count)
+			avg := int32(0)
+			if count > 0 {
+				avg = sum / count
+			}
+			err := binary.Write(buf, binary.BigEndian, avg)
 			if err != nil {
 				fmt.Println("binary.Write failed:", err)
 				return
