@@ -48,13 +48,14 @@ func meansToAnEnd(conn *net.TCPConn) {
 		}
 
 		op := string(msg[0])
+		operand1 := binary.BigEndian.Uint32(msg[1:5])
+		operand2 := binary.BigEndian.Uint32(msg[5:])
+		fmt.Printf("%s-%d-%d", op, operand1, operand2)
 		switch op {
 		case "I":
-			timestamp := binary.BigEndian.Uint32(msg[1:5])
-			price := binary.BigEndian.Uint32(msg[5:])
 			data = append(data, Tuple{
-				Timestamp: int32(timestamp),
-				Price:     int32(price),
+				Timestamp: int32(operand1),
+				Price:     int32(operand2),
 			})
 			slices.SortFunc(data, func(a, b Tuple) int {
 				if a.Timestamp > b.Timestamp {
@@ -65,14 +66,12 @@ func meansToAnEnd(conn *net.TCPConn) {
 				return 0
 			})
 		case "Q":
-			t1 := binary.BigEndian.Uint32(msg[1:5])
-			t2 := binary.BigEndian.Uint32(msg[5:])
 			i1 := int(math.Max(0, float64(slices.IndexFunc(data, func(t Tuple) bool {
-				return t.Timestamp > int32(t1)
+				return t.Timestamp > int32(operand1)
 			}))))
 
 			i2 := int(math.Max(float64(slices.IndexFunc(data, func(t Tuple) bool {
-				return t.Timestamp > int32(t2)
+				return t.Timestamp > int32(operand2)
 			})), float64(len(data)-1)))
 
 			sum := int32(0)
