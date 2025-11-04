@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 	"math"
 	"net"
 	"slices"
@@ -37,8 +38,7 @@ func meansToAnEnd(conn *net.TCPConn) {
 	// handle connection
 	data := []Tuple{}
 	for {
-		msg := make([]byte, 0, 9)
-		_, err := conn.Read(msg)
+		msg, err := io.ReadAll(conn)
 		if err != nil {
 			fmt.Println(err)
 		}
