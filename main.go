@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -78,11 +79,22 @@ func meansToAnEnd(conn *net.TCPConn) {
 			})), float64(len(data)-1)))
 
 			sum := int32(0)
-			count := 0
+			count := int32(0)
 			for i := i1; i < i2; i++ {
 				sum += data[i].Price
 				count++
 			}
+
+			buf := new(bytes.Buffer)
+
+			// Write the int32 to the buffer using BigEndian byte order
+			// You can also use binary.LittleEndian or binary.NativeEndian
+			err := binary.Write(buf, binary.BigEndian, sum/count)
+			if err != nil {
+				fmt.Println("binary.Write failed:", err)
+				return
+			}
+			conn.Write(buf.Bytes())
 		default:
 			return
 		}
