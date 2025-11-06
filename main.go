@@ -73,7 +73,7 @@ func meansToAnEnd(conn *net.TCPConn, clientId int) {
 			})
 		case "Q":
 			i1 := int(math.Max(0, float64(slices.IndexFunc(data, func(t Tuple) bool {
-				return t.Timestamp > int32(operand1)
+				return t.Timestamp >= int32(operand1)
 			}))))
 
 			i2 := int(math.Max(float64(slices.IndexFunc(data, func(t Tuple) bool {
