@@ -10,6 +10,8 @@ import (
 	"slices"
 )
 
+var clientCount int
+
 func main() {
 	// initialize tcp server
 	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: 17500})
@@ -25,7 +27,8 @@ func main() {
 			panic(err)
 		}
 		fmt.Println("Accepted connection !")
-		go meansToAnEnd(conn)
+		clientCount++
+		go meansToAnEnd(conn, clientCount)
 	}
 }
 
@@ -34,10 +37,11 @@ type Tuple struct {
 	Timestamp int32
 }
 
-func meansToAnEnd(conn *net.TCPConn) {
+func meansToAnEnd(conn *net.TCPConn, clientId int) {
 	defer conn.Close()
 	// handle connection
 	data := []Tuple{}
+
 	for {
 		msg := make([]byte, 9)
 		_, err := io.ReadFull(conn, msg)
@@ -52,7 +56,7 @@ func meansToAnEnd(conn *net.TCPConn) {
 		op := string(msg[0])
 		operand1 := int32(binary.BigEndian.Uint32(msg[1:5]))
 		operand2 := int32(binary.BigEndian.Uint32(msg[5:]))
-		fmt.Printf("%s-%d-%d", op, operand1, operand2)
+		fmt.Printf("CLIENT #%d [%s-%d-%d]\n", clientId, op, operand1, operand2)
 		switch op {
 		case "I":
 			data = append(data, Tuple{
