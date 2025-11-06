@@ -82,7 +82,7 @@ func meansToAnEnd(conn *net.TCPConn, clientId int) {
 
 			sum := int32(0)
 			count := int32(0)
-			for i := i1; i < i2; i++ {
+			for i := i1; i <= i2; i++ {
 				sum += data[i].Price
 				count++
 			}
