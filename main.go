@@ -56,7 +56,7 @@ func meansToAnEnd(conn *net.TCPConn, clientId int) {
 		op := string(msg[0])
 		operand1 := int32(binary.BigEndian.Uint32(msg[1:5]))
 		operand2 := int32(binary.BigEndian.Uint32(msg[5:]))
-		fmt.Printf("CLIENT #%d [%s-%d-%d]\n", clientId, op, operand1, operand2)
+		fmt.Printf("CLIENT #%d [%s	%d	%d]\n", clientId, op, operand1, operand2)
 		switch op {
 		case "I":
 			data = append(data, Tuple{
