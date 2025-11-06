@@ -80,6 +80,10 @@ func meansToAnEnd(conn *net.TCPConn, clientId int) {
 				return t.Timestamp > int32(operand2)
 			})), float64(len(data)-1)))
 
+			if i2 > 0 {
+				i2--
+			}
+
 			sum := int32(0)
 			count := int32(0)
 			for i := i1; i <= i2; i++ {
