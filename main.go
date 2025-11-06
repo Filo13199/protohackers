@@ -40,25 +40,23 @@ func meansToAnEnd(conn *net.TCPConn) {
 	data := []Tuple{}
 	for {
 		msg := make([]byte, 9)
-		n, err := io.ReadFull(conn, msg)
+		_, err := io.ReadFull(conn, msg)
 		if err != nil {
 			fmt.Println(err)
 			break
 		}
-		fmt.Printf("recieved message !, [%s], \n", string(msg))
-		fmt.Println(n)
 		if len(msg) == 0 {
 			break
 		}
 
 		op := string(msg[0])
-		operand1 := binary.BigEndian.GoString()
-		operand2 := binary.BigEndian.Uint32(msg[5:])
-		fmt.Printf("%s-%s-%d", op, operand1, operand2)
+		operand1 := int32(binary.BigEndian.Uint32(msg[1:5]))
+		operand2 := int32(binary.BigEndian.Uint32(msg[5:]))
+		fmt.Printf("%s-%d-%d", op, operand1, operand2)
 		switch op {
 		case "I":
 			data = append(data, Tuple{
-				Timestamp: int32(12),
+				Timestamp: int32(operand1),
 				Price:     int32(operand2),
 			})
 			slices.SortFunc(data, func(a, b Tuple) int {
@@ -71,7 +69,7 @@ func meansToAnEnd(conn *net.TCPConn) {
 			})
 		case "Q":
 			i1 := int(math.Max(0, float64(slices.IndexFunc(data, func(t Tuple) bool {
-				return t.Timestamp > int32(12)
+				return t.Timestamp > int32(operand1)
 			}))))
 
 			i2 := int(math.Max(float64(slices.IndexFunc(data, func(t Tuple) bool {
