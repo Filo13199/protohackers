@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"slices"
+	"strings"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -55,8 +56,6 @@ func main() {
 
 		mu.Lock()
 
-		oldClients := slices.Clone(clients)
-
 		client := ChatClient{
 			Name: string(name),
 			Conn: conn,
@@ -64,11 +63,18 @@ func main() {
 		}
 		clients = append(clients, client)
 
-		for i := range oldClients {
-			_, err = oldClients[i].Conn.Write([]byte(fmt.Sprintf("* %s has entered the room\n", name)))
-			if err != nil {
-				log.Fatal(err)
+		for i := range clients {
+			if clients[i].Id != client.Id {
+				_, err = clients[i].Conn.Write([]byte(fmt.Sprintf("* %s has entered the room\n", name)))
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
+		}
+
+		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s\n", strings.Join(clientNames, ", "))))
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		clientNames = append(clientNames, string(name))
