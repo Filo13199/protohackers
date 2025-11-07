@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"slices"
@@ -48,10 +48,13 @@ func main() {
 		}
 
 		fmt.Println(sentBytes)
-		name := []byte{}
-		_, err = io.ReadFull(conn, name)
+		reader := bufio.NewReader(conn)
+
+		name, err := reader.ReadString('\n')
 		if err != nil {
-			log.Fatal(err)
+			// Handle potential errors like EOF (client disconnected) or read timeouts
+			log.Printf("Error reading from connection: %v", err)
+			return
 		}
 
 		mu.Lock()
@@ -72,7 +75,7 @@ func main() {
 			}
 		}
 
-		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s\n", strings.Join(clientNames, ", "))))
+		_, err = conn.Write([]byte(fmt.Sprintf("* the room contains: %s\n", strings.Join(clientNames, ", "))))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -101,11 +104,11 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 		conn.Close()
 	}()
 
+	reader := bufio.NewReader(conn)
 	// handle connection
 
 	for {
-		msg := []byte{}
-		_, err := io.ReadFull(conn, msg)
+		msg, err := reader.ReadString('\n')
 		if err != nil {
 			log.Fatal(err)
 		}
