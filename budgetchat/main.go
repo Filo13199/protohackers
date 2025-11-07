@@ -1,0 +1,118 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"net"
+	"slices"
+	"strings"
+	"sync"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+var clientCount int
+
+type ChatClient struct {
+	Name string
+	Conn *net.TCPConn
+	Id   primitive.ObjectID
+}
+
+var clients []ChatClient
+
+func main() {
+	// initialize tcp server
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{Port: 17500})
+	if err != nil {
+		panic(err)
+	}
+
+	mu := sync.Mutex{}
+	defer listener.Close()
+	clients = []ChatClient{}
+	clientNames := []string{}
+	for {
+		conn, err := listener.AcceptTCP()
+		if err != nil {
+			panic(err)
+		}
+		clientCount++
+		_, err = conn.Write([]byte("What should i call you??"))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		name := []byte{}
+		_, err = io.ReadFull(conn, name)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		mu.Lock()
+
+		oldClients := slices.Clone(clients)
+
+		client := ChatClient{
+			Name: string(name),
+			Conn: conn,
+			Id:   primitive.NewObjectID(),
+		}
+		clients = append(clients, client)
+
+		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s", strings.Join(clientNames, ", "))))
+		if err != nil {
+			log.Fatal(err)
+		}
+		for i := range oldClients {
+			_, err = oldClients[i].Conn.Write([]byte(fmt.Sprintf("* %s has entered the room", name)))
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		clientNames = append(clientNames, string(name))
+		mu.Unlock()
+		go chat(conn, client, &mu)
+	}
+}
+
+func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
+	defer func() {
+		for i := range clients {
+			if clients[i].Id != client.Id {
+				_, err := clients[i].Conn.Write([]byte(fmt.Sprintf("* %s has left the room", client.Name)))
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+		}
+		mu.Lock()
+		clients = slices.DeleteFunc(clients, func(c ChatClient) bool {
+			return c.Id == client.Id
+		})
+		mu.Unlock()
+		conn.Close()
+	}()
+
+	// handle connection
+
+	for {
+		msg := []byte{}
+		_, err := io.ReadFull(conn, msg)
+		if err != nil {
+			log.Fatal(err)
+		}
+		mu.Lock()
+		for i := range clients {
+			if clients[i].Id != client.Id {
+				_, err = clients[i].Conn.Write([]byte(fmt.Sprintf("[%s] %s", string(msg))))
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+		}
+		mu.Unlock()
+	}
+}
