@@ -38,6 +38,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		fmt.Println("recieved connection !, prompting for name")
 		clientCount++
 		_, err = conn.Write([]byte("What should i call you??"))
 		if err != nil {
