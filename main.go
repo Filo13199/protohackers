@@ -5,9 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"math"
 	"net"
-	"slices"
 )
 
 var clientCount int
@@ -63,34 +61,15 @@ func meansToAnEnd(conn *net.TCPConn, clientId int) {
 				Timestamp: int32(operand1),
 				Price:     int32(operand2),
 			})
-			slices.SortFunc(data, func(a, b Tuple) int {
-				if a.Timestamp > b.Timestamp {
-					return 1
-				} else if b.Timestamp > a.Timestamp {
-					return -1
-				}
-				return 0
-			})
-
-			fmt.Println(data)
 		case "Q":
-			i1 := int(math.Max(0, float64(slices.IndexFunc(data, func(t Tuple) bool {
-				return t.Timestamp >= int32(operand1)
-			}))))
-
-			i2 := int(math.Max(float64(slices.IndexFunc(data, func(t Tuple) bool {
-				return t.Timestamp > int32(operand2)
-			})), float64(len(data)-1)))
-
-			if i2 > 0 {
-				i2--
-			}
 
 			sum := int32(0)
 			count := int32(0)
-			for i := i1; i <= i2; i++ {
-				sum += data[i].Price
-				count++
+			for i := range data {
+				if data[i].Timestamp >= operand1 && data[i].Timestamp <= operand2 {
+					sum += data[i].Price
+					count++
+				}
 			}
 
 			buf := new(bytes.Buffer)
