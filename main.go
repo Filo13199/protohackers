@@ -63,11 +63,11 @@ func meansToAnEnd(conn *net.TCPConn, clientId int) {
 			})
 		case "Q":
 
-			sum := int32(0)
-			count := int32(0)
+			sum := int64(0)
+			count := int64(0)
 			for i := range data {
 				if data[i].Timestamp >= operand1 && data[i].Timestamp <= operand2 {
-					sum += data[i].Price
+					sum += int64(data[i].Price)
 					count++
 				}
 			}
@@ -78,7 +78,7 @@ func meansToAnEnd(conn *net.TCPConn, clientId int) {
 			// You can also use binary.LittleEndian or binary.NativeEndian
 			avg := int32(0)
 			if count > 0 {
-				avg = sum / count
+				avg = int32(sum / count)
 			}
 			err := binary.Write(buf, binary.BigEndian, avg)
 			if err != nil {
