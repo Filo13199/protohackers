@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"slices"
-	"strings"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -70,11 +69,6 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-		}
-
-		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s\n", strings.Join(clientNames, ", "))))
-		if err != nil {
-			log.Fatal(err)
 		}
 
 		clientNames = append(clientNames, string(name))
