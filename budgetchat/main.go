@@ -41,11 +41,13 @@ func main() {
 
 		fmt.Println("recieved connection !, prompting for name")
 		clientCount++
-		_, err = conn.Write([]byte("What should i call you??"))
+
+		sentBytes, err := conn.Write([]byte("What should i call you??"))
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		fmt.Println(sentBytes)
 		name := []byte{}
 		_, err = io.ReadFull(conn, name)
 		if err != nil {
