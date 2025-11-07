@@ -42,7 +42,7 @@ func main() {
 		fmt.Println("recieved connection !, prompting for name")
 		clientCount++
 
-		sentBytes, err := conn.Write([]byte("What should i call you??"))
+		sentBytes, err := conn.Write([]byte("What should i call you??\n"))
 		if err != nil {
 			log.Fatal(err)
 		}
