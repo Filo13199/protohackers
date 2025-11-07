@@ -65,12 +65,12 @@ func main() {
 		}
 		clients = append(clients, client)
 
-		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s", strings.Join(clientNames, ", "))))
+		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s\n", strings.Join(clientNames, ", "))))
 		if err != nil {
 			log.Fatal(err)
 		}
 		for i := range oldClients {
-			_, err = oldClients[i].Conn.Write([]byte(fmt.Sprintf("* %s has entered the room", name)))
+			_, err = oldClients[i].Conn.Write([]byte(fmt.Sprintf("* %s has entered the room\n", name)))
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -86,7 +86,7 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 	defer func() {
 		for i := range clients {
 			if clients[i].Id != client.Id {
-				_, err := clients[i].Conn.Write([]byte(fmt.Sprintf("* %s has left the room", client.Name)))
+				_, err := clients[i].Conn.Write([]byte(fmt.Sprintf("* %s has left the room\n", client.Name)))
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -111,7 +111,7 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
-				_, err = clients[i].Conn.Write([]byte(fmt.Sprintf("[%s] %s", string(msg))))
+				_, err = clients[i].Conn.Write([]byte(fmt.Sprintf("[%s] %s\n", client.Name, string(msg))))
 				if err != nil {
 					log.Fatal(err)
 				}
