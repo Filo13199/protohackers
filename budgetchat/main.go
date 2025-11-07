@@ -65,15 +65,16 @@ func main() {
 		}
 		clients = append(clients, client)
 
-		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s\n", strings.Join(clientNames, ", "))))
-		if err != nil {
-			log.Fatal(err)
-		}
 		for i := range oldClients {
 			_, err = oldClients[i].Conn.Write([]byte(fmt.Sprintf("* %s has entered the room\n", name)))
 			if err != nil {
 				log.Fatal(err)
 			}
+		}
+
+		_, err = conn.Write([]byte(fmt.Sprintf("* The room contains: %s\n", strings.Join(clientNames, ", "))))
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		clientNames = append(clientNames, string(name))
