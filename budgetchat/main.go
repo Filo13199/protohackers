@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"slices"
@@ -51,7 +53,7 @@ func main() {
 		reader := bufio.NewReader(conn)
 
 		name, err := reader.ReadString('\n')
-		if err != nil {
+		if err != nil && !errors.Is(err, io.EOF) {
 			// Handle potential errors like EOF (client disconnected) or read timeouts
 			log.Printf("Error reading from connection: %v", err)
 			return
@@ -109,7 +111,7 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 
 	for {
 		msg, err := reader.ReadString('\n')
-		if err != nil {
+		if err != nil && !errors.Is(err, io.EOF) {
 			log.Fatal(err)
 		}
 		mu.Lock()
