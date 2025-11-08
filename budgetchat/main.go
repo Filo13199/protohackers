@@ -124,9 +124,9 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 			log.Fatal(err)
 		}
 
-		fmt.Println("message before trimming")
+		fmt.Println("message before trimming", msg)
 		msg = strings.TrimRight(msg, "\r\n")
-		fmt.Println("message after trimming")
+		fmt.Println("message after trimming", msg)
 		content := "[" + client.Name + "] " + msg + "\n"
 
 		fmt.Println("client isss ", client)
