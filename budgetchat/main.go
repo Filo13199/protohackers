@@ -36,7 +36,7 @@ func main() {
 	defer listener.Close()
 	clients = []ChatClient{}
 	clientNames := []string{}
-	rxgx := regexp.MustCompile("^[a-zA-Z0-9]*$")
+	rxgx := regexp.MustCompile("^[a-zA-Z0-9]*")
 	for {
 		conn, err := listener.AcceptTCP()
 		if err != nil {
