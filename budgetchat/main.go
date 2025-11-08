@@ -91,7 +91,7 @@ func main() {
 			}
 		}
 
-		_, err = conn.Write([]byte(fmt.Sprintf("* the room contains: %s", strings.Join(clientNames, ", "))))
+		_, err = conn.Write([]byte(fmt.Sprintf("* the room contains: %s\n", strings.Join(clientNames, ", "))))
 		if err != nil {
 			log.Fatal(err)
 		}
