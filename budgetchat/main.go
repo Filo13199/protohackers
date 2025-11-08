@@ -64,6 +64,11 @@ func main() {
 		match := rxgx.MatchString(name)
 		if !match || len(name) == 0 {
 			fmt.Printf("invalid name [%s]", name)
+			_, err = conn.Write([]byte(fmt.Sprintf("invalid name !\n")))
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			conn.Close()
 			continue
 		}
