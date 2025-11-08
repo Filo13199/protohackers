@@ -61,7 +61,7 @@ func main() {
 		}
 
 		match, _ := regexp.MatchString("^[a-zA-Z0-9]*$", name)
-		if !match {
+		if !match || len(name) == 0 {
 			conn.Close()
 			continue
 		}
