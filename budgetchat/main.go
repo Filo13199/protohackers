@@ -64,7 +64,7 @@ func main() {
 		match := rxgx.MatchString(name)
 		if !match || len(name) == 0 {
 			fmt.Printf("invalid name [%s]", name)
-			_, err = conn.Write([]byte(fmt.Sprintf("invalid name !\n")))
+			_, err = conn.Write([]byte("invalid name !\n"))
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -91,7 +91,7 @@ func main() {
 			}
 		}
 
-		_, err = conn.Write([]byte(fmt.Sprintf("* the room contains: %s\n", strings.Join(clientNames, ", "))))
+		_, err = conn.Write([]byte(fmt.Sprintf("* the room contains: %s", strings.Join(clientNames, ", "))))
 		if err != nil {
 			log.Fatal(err)
 		}
