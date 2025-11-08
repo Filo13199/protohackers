@@ -122,10 +122,12 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 		if err != nil && !errors.Is(err, io.EOF) {
 			log.Fatal(err)
 		}
+
+		msg = string(bytes.TrimRight([]byte(msg), "\n\r"))
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
-				writeFunc(&clients[i], []byte(fmt.Sprintf("[%s] %s", client.Name, string(msg))))
+				writeFunc(&clients[i], []byte(fmt.Sprintf("[%s] %s\n", client.Name, string(msg))))
 			}
 		}
 		mu.Unlock()
