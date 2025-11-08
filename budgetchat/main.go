@@ -123,7 +123,7 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 			log.Fatal(err)
 		}
 
-		msg = strings.ReplaceAll(msg, "\n", "")
+		msg = strings.TrimRight(msg, "\r\n")
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
