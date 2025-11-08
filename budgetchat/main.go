@@ -102,12 +102,12 @@ func main() {
 
 func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 	defer func() {
+		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
 				writeFunc(&clients[i], []byte(fmt.Sprintf("* %s has left the room\n", client.Name)))
 			}
 		}
-		mu.Lock()
 		clients = slices.DeleteFunc(clients, func(c ChatClient) bool {
 			return c.Id == client.Id
 		})
@@ -128,12 +128,8 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 			break
 		}
 
-		fmt.Println("message before trimming", msg)
 		msg = strings.TrimRight(msg, "\r\n")
-		fmt.Println("message after trimming", msg)
 		content := "[" + client.Name + "] " + msg + "\n"
-
-		fmt.Println("client isss ", client)
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
