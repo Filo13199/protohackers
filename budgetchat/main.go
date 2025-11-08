@@ -63,6 +63,7 @@ func main() {
 
 		match := rxgx.MatchString(name)
 		if !match || len(name) == 0 {
+			fmt.Printf("invalid name [%s]", name)
 			conn.Close()
 			continue
 		}
