@@ -124,6 +124,10 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 			log.Fatal(err)
 		}
 
+		if errors.Is(err, io.EOF) {
+			break
+		}
+
 		fmt.Println("message before trimming", msg)
 		msg = strings.TrimRight(msg, "\r\n")
 		fmt.Println("message after trimming", msg)
