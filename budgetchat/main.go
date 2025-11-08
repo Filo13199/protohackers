@@ -83,11 +83,11 @@ func main() {
 		clients = append(clients, client)
 		for i := range clients {
 			if clients[i].Id != client.Id {
-				writeFunc(clients[i], []byte(fmt.Sprintf("* %s has entered the room\n", name)))
+				writeFunc(&clients[i], []byte(fmt.Sprintf("* %s has entered the room\n", name)))
 			}
 		}
 
-		writeFunc(client, []byte(fmt.Sprintf("* the room contains: %s\n", strings.Join(clientNames, ", "))))
+		writeFunc(&client, []byte(fmt.Sprintf("* the room contains: %s\n", strings.Join(clientNames, ", "))))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -102,7 +102,7 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 	defer func() {
 		for i := range clients {
 			if clients[i].Id != client.Id {
-				writeFunc(clients[i], []byte(fmt.Sprintf("* %s has left the room\n", client.Name)))
+				writeFunc(&clients[i], []byte(fmt.Sprintf("* %s has left the room\n", client.Name)))
 			}
 		}
 		mu.Lock()
@@ -124,14 +124,14 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
-				writeFunc(clients[i], []byte(fmt.Sprintf("[%s] %s\n", client.Name, string(msg))))
+				writeFunc(&clients[i], []byte(fmt.Sprintf("[%s] %s\n", client.Name, string(msg))))
 			}
 		}
 		mu.Unlock()
 	}
 }
 
-func writeFunc(client ChatClient, bytes []byte) {
+func writeFunc(client *ChatClient, bytes []byte) {
 	fmt.Printf("Sending message to %s, content= [%s]", client.Name, string(bytes))
 	_, err := client.Conn.Write(bytes)
 	if err != nil {
