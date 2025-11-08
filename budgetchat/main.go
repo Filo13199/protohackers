@@ -123,7 +123,9 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 			log.Fatal(err)
 		}
 
-		msg = string(bytes.TrimRight([]byte(msg), "\n\r"))
+		msg = strings.TrimRightFunc(msg, func(r rune) bool {
+			return r == '\n' || r == '\r'
+		})
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
