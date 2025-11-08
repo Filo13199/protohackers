@@ -125,7 +125,7 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
-				writeFunc(&clients[i], []byte(fmt.Sprintf("[%s] %s\n", client.Name, string(msg))))
+				writeFunc(&clients[i], []byte(fmt.Sprintf("[%s] %s", client.Name, string(msg))))
 			}
 		}
 		mu.Unlock()
