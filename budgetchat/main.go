@@ -63,6 +63,7 @@ func main() {
 		}
 
 		match := rxgx.MatchString(name)
+		name = strings.TrimRight(name, "\r\n")
 		if !match || len(name) == 0 || slices.Contains(clientNames, name) {
 			fmt.Printf("invalid name [%s]", name)
 			_, err = conn.Write([]byte("invalid name !\n"))
@@ -124,7 +125,7 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 		}
 
 		msg = strings.TrimRight(msg, "\r\n")
-		content := "[" + msg + "] " + msg + "\n"
+		content := "[" + client.Name + "] " + msg + "\n"
 		mu.Lock()
 		for i := range clients {
 			if clients[i].Id != client.Id {
