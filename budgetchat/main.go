@@ -62,6 +62,7 @@ func main() {
 			return
 		}
 
+		fmt.Println(name)
 		match := rxgx.MatchString(name)
 		name = strings.TrimRight(name, "\r\n")
 		if !match || len(name) == 0 || slices.Contains(clientNames, name) {
