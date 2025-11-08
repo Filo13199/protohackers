@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"regexp"
 	"slices"
 	"strings"
 	"sync"
@@ -57,6 +58,12 @@ func main() {
 			// Handle potential errors like EOF (client disconnected) or read timeouts
 			log.Printf("Error reading from connection: %v", err)
 			return
+		}
+
+		match, _ := regexp.MatchString("^[a-zA-Z0-9]*$", name)
+		if !match {
+			conn.Close()
+			continue
 		}
 
 		mu.Lock()
