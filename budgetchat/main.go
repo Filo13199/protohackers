@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -62,7 +63,7 @@ func main() {
 		}
 
 		match := rxgx.MatchString(name)
-		if !match || len(name) == 0 {
+		if !match || len(name) == 0 || slices.Contains(clientNames, name) {
 			fmt.Printf("invalid name [%s]", name)
 			_, err = conn.Write([]byte("invalid name !\n"))
 			if err != nil {
@@ -87,7 +88,7 @@ func main() {
 			}
 		}
 
-		writeFunc(&client, []byte(fmt.Sprintf("* the room contains: %s\n", strings.Join(clientNames, ", "))))
+		writeFunc(&client, []byte(fmt.Sprintf("* The room contains: %s \n", strings.Join(clientNames, ", "))))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -131,9 +132,9 @@ func chat(conn *net.TCPConn, client ChatClient, mu *sync.Mutex) {
 	}
 }
 
-func writeFunc(client *ChatClient, bytes []byte) {
-	fmt.Printf("Sending message to %s, content= [%s]", client.Name, string(bytes))
-	_, err := client.Conn.Write(bytes)
+func writeFunc(client *ChatClient, b []byte) {
+	fmt.Printf("Sending message to %s, content= [%s], newlines count = %d", client.Name, string(b), bytes.Count(b, []byte{'\n'}))
+	_, err := client.Conn.Write(b)
 	if err != nil {
 		log.Fatal(err)
 	}
